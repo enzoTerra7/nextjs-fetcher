@@ -40,7 +40,14 @@ export class NextJsFetcher {
     return this.baseURL ? `${this.baseURL}${url}` : url;
   }
 
-  async get<T = unknown>(url: string, options?: RequestInit): Promise<T> {
+  async get<T = unknown>(
+    url: string,
+    options?: RequestInit
+  ): Promise<
+    PartiallyData & {
+      data: T | null;
+    }
+  > {
     return this.request<T>(url, { ...options, method: "GET" });
   }
 
@@ -48,7 +55,11 @@ export class NextJsFetcher {
     url: string,
     body?: any,
     options?: RequestInit
-  ): Promise<T> {
+  ): Promise<
+    PartiallyData & {
+      data: T | null;
+    }
+  > {
     return this.request<T>(url, {
       ...options,
       method: "POST",
@@ -63,7 +74,11 @@ export class NextJsFetcher {
     url: string,
     body?: any,
     options?: RequestInit
-  ): Promise<T> {
+  ): Promise<
+    PartiallyData & {
+      data: T | null;
+    }
+  > {
     return this.request<T>(url, {
       ...options,
       method: "PUT",
@@ -74,7 +89,14 @@ export class NextJsFetcher {
     });
   }
 
-  async delete<T = unknown>(url: string, options?: RequestInit): Promise<T> {
+  async delete<T = unknown>(
+    url: string,
+    options?: RequestInit
+  ): Promise<
+    PartiallyData & {
+      data: T | null;
+    }
+  > {
     return this.request<T>(url, { ...options, method: "DELETE" });
   }
 
@@ -82,7 +104,11 @@ export class NextJsFetcher {
     url: string,
     body?: any,
     options?: RequestInit
-  ): Promise<T> {
+  ): Promise<
+    PartiallyData & {
+      data: T | null;
+    }
+  > {
     return this.request<T>(url, {
       ...options,
       method: "PATCH",
@@ -93,20 +119,63 @@ export class NextJsFetcher {
     });
   }
 
-  async request<T = unknown>(url: string, options: RequestInit): Promise<T> {
+  async request<T = unknown>(
+    url: string,
+    options: RequestInit
+  ): Promise<
+    PartiallyData & {
+      data: T | null;
+    }
+  > {
     const headers = await this.prepareHeaders(options.headers || {});
     const response = await fetch(this.buildUrl(url), {
       ...options,
       headers,
     });
 
+    const partiallyData = {
+      status: response.status,
+      statusText: response.statusText,
+      headers: response.headers,
+      options: {
+        ...options,
+        headers,
+        body: await response.text(),
+      },
+    };
+
     if (!response.ok) {
-      const errorBody = await response.text();
-      throw new Error(
-        `HTTP error! Status: ${response.status}, Body: ${errorBody}`
-      );
+      try {
+        const errorBody = await response.json();
+
+        throw {
+          ...partiallyData,
+          err: errorBody,
+        };
+      } catch {
+        throw partiallyData;
+      }
     }
 
-    return response.json();
+    try {
+      const data = await response.json();
+
+      return {
+        ...partiallyData,
+        data: data,
+      };
+    } catch {
+      return {
+        ...partiallyData,
+        data: null,
+      };
+    }
   }
 }
+
+type PartiallyData = {
+  status: number;
+  statusText: string;
+  headers: Headers;
+  options: RequestInit;
+};
