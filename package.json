@@ -1,6 +1,7 @@
 {
   "name": "@enzotrr/nextjs-fetcher",
   "version": "1.0.1",
+  "description": "Lightweight, type-safe HTTP client for React and Next.js applications",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -15,8 +16,9 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch"
+    "build": "tsup src/index.ts --dts --format esm,cjs",
+    "dev": "tsup src/index.ts --watch",
+    "clean": "rm -rf dist"
   },
   "peerDependencies": {
     "react": "^18.0.0"
@@ -24,5 +26,14 @@
   "devDependencies": {
     "tsup": "^7.0.0",
     "typescript": "^5.0.0"
-  }
+  },
+  "keywords": [
+    "fetcher",
+    "fetching",
+    "query",
+    "next.js",
+    "react"
+  ],
+  "author": "Enzo Apolinário",
+  "license": "MIT"
 }
