@@ -64,7 +64,7 @@ interface User {
 
 // Get a typed response
 const user = await fetcher.get<User>('/users/1');
-console.log(user.name); // TypeScript knows the shape of 'user'
+console.log(user.data.data.name); // TypeScript knows the shape of 'user'
 
 // Post with a typed request body and response
 const newUser = await fetcher.post<User>('/users', {
@@ -107,15 +107,17 @@ new NextJsFetcher(options?: NextJsFetcherOptions)
 
 #### HTTP Methods
 
-- `get<T = unknown>(url: string, options?: RequestInit): Promise<T>`
-- `post<T = unknown>(url: string, body?: any, options?: RequestInit): Promise<T>`
-- `put<T = unknown>(url: string, body?: any, options?: RequestInit): Promise<T>`
-- `delete<T = unknown>(url: string, options?: RequestInit): Promise<T>`
-- `patch<T = unknown>(url: string, body?: any, options?: RequestInit): Promise<T>`
+` type PartiallyData = { status: number; statusText: string; headers: Headers; options: RequestInit; }; `
+
+- `get<T = unknown>(url: string, options?: RequestInit): Promise<PartiallyData & {data: T | null}>`
+- `post<T = unknown>(url: string, body?: any, options?: RequestInit): Promise<PartiallyData & {data: T | null}>`
+- `put<T = unknown>(url: string, body?: any, options?: RequestInit): Promise<PartiallyData & {data: T | null}>`
+- `delete<T = unknown>(url: string, options?: RequestInit): Promise<PartiallyData & {data: T | null}>`
+- `patch<T = unknown>(url: string, body?: any, options?: RequestInit): Promise<PartiallyData & {data: T | null}>`
 
 #### Advanced Methods
 
-- `request<T = unknown>(url: string, options: RequestInit): Promise<T>` - Make a custom request
+- `request<T = unknown>(url: string, options: RequestInit): Promise<PartiallyData & {data: T | null}>` - Make a custom request
 - `interceptor(fn: HeadersInterceptor)` - Set a header interceptor function
 
 #### Types
