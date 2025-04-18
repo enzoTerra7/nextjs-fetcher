@@ -21,7 +21,7 @@
     "clean": "rm -rf dist"
   },
   "peerDependencies": {
-    "react": "^18.0.0"
+    "react": ">=19.0.0"
   },
   "devDependencies": {
     "tsup": "^7.0.0",
