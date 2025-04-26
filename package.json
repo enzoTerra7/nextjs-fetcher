@@ -18,7 +18,8 @@
   "scripts": {
     "build": "tsup src/index.ts --dts --format esm,cjs",
     "dev": "tsup src/index.ts --watch",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "release": "npm run build && npm version patch && npm publish"
   },
   "peerDependencies": {
     "react": ">=19.0.0"
