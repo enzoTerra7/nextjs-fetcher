@@ -1,6 +1,6 @@
 {
   "name": "@enzotrr/nextjs-fetcher",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Lightweight, type-safe HTTP client for React and Next.js applications",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
