@@ -140,7 +140,6 @@ export class NextJsFetcher {
       options: {
         ...options,
         headers,
-        body: await response.text(),
       },
     };
 
