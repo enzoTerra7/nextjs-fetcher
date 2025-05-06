@@ -15,7 +15,6 @@ export class NextJsFetcher {
   constructor(options?: NextJsFetcherOptions) {
     this.baseURL = options?.baseURL;
     this.headers = {
-      "Content-Type": "application/json",
       ...options?.headers,
     };
   }
@@ -29,11 +28,11 @@ export class NextJsFetcher {
   ): Promise<HeadersInit> {
     if (this.interceptorFn) {
       return await this.interceptorFn({
-        ...this.headers,
+        ...(this.headers || {}),
         ...headers,
       });
     }
-    return headers;
+    return { ...(this.headers || {}), ...headers };
   }
 
   private buildUrl(url: string) {
@@ -60,13 +59,25 @@ export class NextJsFetcher {
       data: T;
     }
   > {
+    // Check if body is FormData
+    const isFormData = body instanceof FormData;
+
+    // Don't stringify FormData and don't set Content-Type (browser will set it automatically)
+    const processedBody = isFormData ? body : JSON.stringify(body);
+
+    // For FormData, we should not set Content-Type header
+    const headers = isFormData
+      ? { ...options?.headers }
+      : {
+          "Content-Type": "application/json",
+          ...(options?.headers || {}),
+        };
+
     return this.request<T>(url, {
       ...options,
       method: "POST",
-      body: JSON.stringify(body),
-      headers: {
-        ...(options?.headers || {}),
-      },
+      body: processedBody,
+      headers,
     });
   }
 
@@ -79,13 +90,21 @@ export class NextJsFetcher {
       data: T;
     }
   > {
+    const isFormData = body instanceof FormData;
+    const processedBody = isFormData ? body : JSON.stringify(body);
+
+    const headers = isFormData
+      ? { ...options?.headers }
+      : {
+          "Content-Type": "application/json",
+          ...(options?.headers || {}),
+        };
+
     return this.request<T>(url, {
       ...options,
       method: "PUT",
-      body: JSON.stringify(body),
-      headers: {
-        ...(options?.headers || {}),
-      },
+      body: processedBody,
+      headers,
     });
   }
 
@@ -109,13 +128,21 @@ export class NextJsFetcher {
       data: T;
     }
   > {
+    const isFormData = body instanceof FormData;
+    const processedBody = isFormData ? body : JSON.stringify(body);
+
+    const headers = isFormData
+      ? { ...options?.headers }
+      : {
+          "Content-Type": "application/json",
+          ...(options?.headers || {}),
+        };
+
     return this.request<T>(url, {
       ...options,
       method: "PATCH",
-      body: JSON.stringify(body),
-      headers: {
-        ...(options?.headers || {}),
-      },
+      body: processedBody,
+      headers,
     });
   }
 
