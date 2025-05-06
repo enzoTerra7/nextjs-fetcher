@@ -57,7 +57,7 @@ export class NextJsFetcher {
     options?: RequestInit
   ): Promise<
     PartiallyData & {
-      data: T
+      data: T;
     }
   > {
     return this.request<T>(url, {
@@ -76,7 +76,7 @@ export class NextJsFetcher {
     options?: RequestInit
   ): Promise<
     PartiallyData & {
-      data: T
+      data: T;
     }
   > {
     return this.request<T>(url, {
@@ -94,7 +94,7 @@ export class NextJsFetcher {
     options?: RequestInit
   ): Promise<
     PartiallyData & {
-      data: T
+      data: T;
     }
   > {
     return this.request<T>(url, { ...options, method: "DELETE" });
@@ -106,7 +106,7 @@ export class NextJsFetcher {
     options?: RequestInit
   ): Promise<
     PartiallyData & {
-      data: T
+      data: T;
     }
   > {
     return this.request<T>(url, {
@@ -162,11 +162,11 @@ export class NextJsFetcher {
     const data = await response
       .json()
       .then((data) => data)
-      .catch(() => null);
+      .catch((json) => json);
 
     return {
       ...partiallyData,
-      data: data !== null ? (data as T) : (response as T),
+      data: data as T,
     };
   }
 }
