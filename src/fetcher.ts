@@ -45,7 +45,7 @@ export class NextJsFetcher {
     options?: RequestInit
   ): Promise<
     PartiallyData & {
-      data: T | null;
+      data: T;
     }
   > {
     return this.request<T>(url, { ...options, method: "GET" });
@@ -57,7 +57,7 @@ export class NextJsFetcher {
     options?: RequestInit
   ): Promise<
     PartiallyData & {
-      data: T | null;
+      data: T
     }
   > {
     return this.request<T>(url, {
@@ -76,7 +76,7 @@ export class NextJsFetcher {
     options?: RequestInit
   ): Promise<
     PartiallyData & {
-      data: T | null;
+      data: T
     }
   > {
     return this.request<T>(url, {
@@ -94,7 +94,7 @@ export class NextJsFetcher {
     options?: RequestInit
   ): Promise<
     PartiallyData & {
-      data: T | null;
+      data: T
     }
   > {
     return this.request<T>(url, { ...options, method: "DELETE" });
@@ -106,7 +106,7 @@ export class NextJsFetcher {
     options?: RequestInit
   ): Promise<
     PartiallyData & {
-      data: T | null;
+      data: T
     }
   > {
     return this.request<T>(url, {
@@ -124,7 +124,7 @@ export class NextJsFetcher {
     options: RequestInit
   ): Promise<
     PartiallyData & {
-      data: T | null;
+      data: T;
     }
   > {
     const headers = await this.prepareHeaders(options.headers || {});
@@ -144,31 +144,30 @@ export class NextJsFetcher {
     };
 
     if (!response.ok) {
-      try {
-        const errorBody = await response.json();
+      const err = await response
+        .json()
+        .then((data) => {
+          return data;
+        })
+        .catch(() => {
+          return null;
+        });
 
-        throw {
-          ...partiallyData,
-          err: errorBody,
-        };
-      } catch {
-        throw partiallyData;
-      }
-    }
-
-    try {
-      const data = await response.json();
-
-      return {
+      throw {
         ...partiallyData,
-        data: data,
-      };
-    } catch {
-      return {
-        ...partiallyData,
-        data: null,
+        error: err,
       };
     }
+
+    const data = await response
+      .json()
+      .then((data) => data)
+      .catch(() => null);
+
+    return {
+      ...partiallyData,
+      data: data !== null ? (data as T) : (response as T),
+    };
   }
 }
 
